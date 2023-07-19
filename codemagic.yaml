@@ -2,7 +2,7 @@ workflows:
   test_1:
     name: FirstWorkFlow
     scripts:
-      - flutter package pub get
+      - flutter pub get
       - name : Build Apk
         script: flutter build apk -- release
     artifacts:
