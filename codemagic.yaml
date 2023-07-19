@@ -1,5 +1,9 @@
 workflow:
   test_1:
-    name: Testing
     scripts:
-      -   echo "Hello Tester...!"
+      name: Flutter Get Package
+      scripts: flutter package pub get
+      name : Build Android Apk
+      scripts: flutter build apk -- release
+    artifacts:
+      -   build/**/output/**/*.apk
