@@ -3,7 +3,7 @@ workflow:
     scripts:
       name: Flutter Get Package
       scripts: flutter package pub get
-      name : Build Android Apk
+      name : Build Apk
       scripts: flutter build apk -- release
     artifacts:
       -   build/**/output/**/*.apk
