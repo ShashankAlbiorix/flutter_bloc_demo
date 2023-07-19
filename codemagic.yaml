@@ -1,9 +1,9 @@
 workflow:
   test_1:
     scripts:
-      name: Flutter Get Package
-      scripts: flutter package pub get
-      name : Build Apk
-      scripts: flutter build apk -- release
+      - name: Flutter Get Package
+        scripts: flutter package pub get
+      - name : Build Apk
+        scripts: flutter build apk -- release
     artifacts:
       -   build/**/output/**/*.apk
