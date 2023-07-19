@@ -1,5 +1,6 @@
 workflow:
   test_1:
+    name: FirstWorkFlow
     scripts:
       - name: Flutter Get Package
         scripts: flutter package pub get
