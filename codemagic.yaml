@@ -4,6 +4,6 @@ workflows:
     scripts:
       - flutter pub get
       - name : Build Apk
-        script: flutter build apk -- release
+        script: flutter build apk --release
     artifacts:
       -   build/**/output/**/*.apk
