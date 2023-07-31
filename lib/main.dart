@@ -1,4 +1,5 @@
 import 'package:bigbaazar/SplashScreen/splash_screen.dart';
+import 'package:bigbaazar/dashboard/bloc/dashboard_bloc.dart';
 import 'package:bigbaazar/signin/bloc/signin_bloc.dart';
 import 'package:bigbaazar/signup/bloc/signup_bloc.dart';
 import 'package:device_preview/device_preview.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<SplashScreenBloc>(create: (context) => SplashScreenBloc()),
         BlocProvider<SigninBloc>(create: (context) => SigninBloc()),
         BlocProvider<SignupBloc>(create: (context) => SignupBloc()),
+        BlocProvider<DashboardBloc>(create: (context) => DashboardBloc()),
       ],
       child: MaterialApp(
         themeAnimationCurve: Curves.bounceIn,

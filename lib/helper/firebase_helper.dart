@@ -1,9 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final firebaseInstance = FirebaseDatabase.instance;
+final firebaseFirestoreInstance = FirebaseFirestore.instance;
 final firebaseAuthInstance = FirebaseAuth.instance;
 final firebaseAuth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -68,5 +69,17 @@ Future<void> handleSignOut() async {
     await firebaseAuth.signOut();
   } catch (error) {
     print("Error signing out: $error");
+  }
+}
+
+Future<QuerySnapshot?> getProductBanners() async {
+  try {
+    var bannerData =
+        await FirebaseFirestore.instance.collection('banners').get();
+    // print(productData.docs);
+    return bannerData;
+  } on Exception catch (e) {
+    print(e.toString());
+    return null;
   }
 }

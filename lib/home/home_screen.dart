@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc_demo/dashboard/dashboard.dart';
 
-import '../constant.dart';
+import '../app_config/routerName.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = 'home';
@@ -65,8 +64,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                                context, DashboardScreen.routeName);
+                            Navigator.pushNamed(context, dashboardRoute);
                           },
                           child: Container(
                             height: 50,

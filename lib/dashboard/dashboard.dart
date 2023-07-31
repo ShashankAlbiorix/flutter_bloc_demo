@@ -1,17 +1,18 @@
+import 'package:bigbaazar/dashboard/bloc/dashboard_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../app_config/routerName.dart';
 import '../constant.dart';
 import '../helper/firebase_helper.dart';
+import '../models/banner_model.dart';
 import '../widgets/common_textfeild.dart';
 
 class DashboardScreen extends StatelessWidget {
-  int _current = 0;
-
-  final CarouselController _controller = CarouselController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   DashboardScreen({super.key});
@@ -26,220 +27,222 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: const NavDrawer(),
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
+    return BlocConsumer<DashboardBloc, DashboardState>(
+      listener: (context, state) {
+        if (state is DashboardInitial) {
+          BlocProvider.of<DashboardBloc>(context).add(
+            GetBannersData(),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          key: _scaffoldKey,
+          drawer: const NavDrawer(),
+          body: SafeArea(
+              child: SingleChildScrollView(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: blueColor),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      clipBehavior: Clip.hardEdge,
-                      child: (user?.photoURL != null)
-                          ? CachedNetworkImage(
-                              imageUrl: user!.photoURL!,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            )
-                          : Image.asset(
-                              userPNG,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
+                const SizedBox(
+                  height: 10,
                 ),
-                Flexible(
-                  child: CommonTextfield(
-                    textEditingController: searchTextController!,
-                    hint: "Search Product",
-                    prefixIcon: const Icon(
-                      Icons.search_outlined,
-                      color: blueColor,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.favorite_border),
-                  color: grayColor,
-                  iconSize: 30,
-                ),
-                IconButton(
-                  splashRadius: 5.0,
-                  onPressed: () {},
-                  icon: Stack(fit: StackFit.loose, children: [
-                    const Icon(
-                      Icons.notifications_outlined,
-                    ),
-                    Positioned(
-                      right: 5,
-                      top: 5,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        _scaffoldKey.currentState?.openDrawer();
+                      },
                       child: Container(
-                        height: 8,
-                        width: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        height: 50,
+                        width: 50,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.red),
+                            borderRadius: BorderRadius.circular(50),
+                            color: blueColor),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          clipBehavior: Clip.hardEdge,
+                          child: (user?.photoURL != null)
+                              ? CachedNetworkImage(
+                                  imageUrl: user!.photoURL!,
+                                  placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator()),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                )
+                              : Image.asset(
+                                  userPNG,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       ),
                     ),
-                  ]),
-                  color: grayColor,
-                  iconSize: 30,
+                    Flexible(
+                      child: CommonTextfield(
+                        textEditingController: searchTextController!,
+                        hint: "Search Product",
+                        prefixIcon: const Icon(
+                          Icons.search_outlined,
+                          color: blueColor,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        BlocProvider.of<DashboardBloc>(context).add(
+                          GetBannersData(),
+                        );
+                      },
+                      icon: const Icon(Icons.favorite_border),
+                      color: grayColor,
+                      iconSize: 30,
+                    ),
+                    IconButton(
+                      splashRadius: 5.0,
+                      onPressed: () {},
+                      icon: Stack(fit: StackFit.loose, children: [
+                        const Icon(
+                          Icons.notifications_outlined,
+                        ),
+                        Positioned(
+                          right: 5,
+                          top: 5,
+                          child: Container(
+                            height: 8,
+                            width: 8,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.red),
+                          ),
+                        ),
+                      ]),
+                      color: grayColor,
+                      iconSize: 30,
+                    ),
+                  ],
                 ),
+                state is BannerLoded
+                    ? carouselBanner(context, state.banners)
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 1,
+                  color: grayColor,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Category",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Spacer(),
+                      Text(
+                        "More Category",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: blueColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 160,
+                  child: ListView(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      categoryTag(menSVG, "Man Shirt"),
+                      categoryTag(productSVG, "Dress"),
+                      categoryTag(bagSVG, "Man Work Equipment"),
+                      categoryTag(womenBagSVG, "Woman Bag"),
+                      categoryTag(shoesSVG, "Man Shoes"),
+                      categoryTag(womenshoesSVG, "Woman Shoes"),
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Flash Sale",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Spacer(),
+                      Text(
+                        "See More",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: blueColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      productTag(
+                          p1PNG,
+                          context,
+                          "FS - Nike Air Max 270 React...",
+                          "\$299,43",
+                          "\$534,33",
+                          "24% Off"),
+                      productTag(p2PNG, context, "FS - QUILTED MAXI CROS...",
+                          "\$299,43", "\$534,33", "24% Off"),
+                      productTag(
+                          p3PNG,
+                          context,
+                          "FS - Nike Air Max 270 React...",
+                          "\$299,43",
+                          "\$534,33",
+                          "24% Off"),
+                      productTag(
+                          p4PNG,
+                          context,
+                          "FS - Nike Air Max 270 React...",
+                          "\$299,43",
+                          "\$534,33",
+                          "24% Off"),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      clipBehavior: Clip.hardEdge,
+                      child: Image.asset(productDayPNG)),
+                )
               ],
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              width: MediaQuery.of(context).size.width,
-              height: 1,
-              color: grayColor,
-            ),
-            CarouselSlider(
-              items: imageSliders,
-              carouselController: _controller,
-              options: CarouselOptions(
-                  enableInfiniteScroll: false,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  enlargeFactor: 0.2,
-                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                  onPageChanged: (index, reason) {
-                    _current = index;
-                  }),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: imageSliders.asMap().entries.map((entry) {
-                return GestureDetector(
-                  onTap: () => _controller.animateToPage(entry.key),
-                  child: Container(
-                    width: 12.0,
-                    height: 12.0,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 4.0),
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: (Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black)
-                            .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                  ),
-                );
-              }).toList(),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Row(
-                children: [
-                  Text(
-                    "Category",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    "More Category",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: blueColor,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 160,
-              child: ListView(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                scrollDirection: Axis.horizontal,
-                children: [
-                  categoryTag(menSVG, "Man Shirt"),
-                  categoryTag(productSVG, "Dress"),
-                  categoryTag(bagSVG, "Man Work Equipment"),
-                  categoryTag(womenBagSVG, "Woman Bag"),
-                  categoryTag(shoesSVG, "Man Shoes"),
-                  categoryTag(womenshoesSVG, "Woman Shoes"),
-                ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Row(
-                children: [
-                  Text(
-                    "Flash Sale",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    "See More",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: blueColor,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 200,
-              child: ListView(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                scrollDirection: Axis.horizontal,
-                children: [
-                  productTag(p1PNG, context, "FS - Nike Air Max 270 React...",
-                      "\$299,43", "\$534,33", "24% Off"),
-                  productTag(p2PNG, context, "FS - QUILTED MAXI CROS...",
-                      "\$299,43", "\$534,33", "24% Off"),
-                  productTag(p3PNG, context, "FS - Nike Air Max 270 React...",
-                      "\$299,43", "\$534,33", "24% Off"),
-                  productTag(p4PNG, context, "FS - Nike Air Max 270 React...",
-                      "\$299,43", "\$534,33", "24% Off"),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  clipBehavior: Clip.hardEdge,
-                  child: Image.asset(productDayPNG)),
-            )
-          ],
-        ),
-      )),
+          )),
+        );
+      },
     );
   }
 }
@@ -345,16 +348,6 @@ class NavDrawer extends StatelessWidget {
     );
   }
 }
-
-List<Widget> imageSliders = [
-  FlashSale(
-      "https://img.freepik.com/premium-vector/megaphone-with-new-product-speech-bubble-banner-loudspeaker-label-business-marketing-advertising-vector-isolated-background-eps-10_399089-1695.jpg"),
-  FlashSale(
-      "https://assetstorev1-prd-cdn.unity3d.com/key-image/acb3e1b5-9947-482a-892c-b85b97b75573.jpg"),
-  FlashSale(
-      "https://img.freepik.com/premium-vector/flash-sale-banner-promotion_131000-379.jpg?w=2000"),
-  // FlashSale(),
-];
 
 Widget FlashSale(String url) {
   return Container(
@@ -484,5 +477,58 @@ Widget productTag(String assestTag, BuildContext context, String productName,
         )
       ],
     ),
+  );
+}
+
+Widget carouselBanner(BuildContext context, List<BannerModel> bannerModel) {
+  int current = 0;
+
+  final CarouselController controller = CarouselController();
+
+  List<Widget> imageSliders = [];
+
+  bannerModel.forEach(
+    (element) {
+      imageSliders.add(FlashSale(element.bannerUrl));
+    },
+  );
+
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      CarouselSlider(
+        items: imageSliders,
+        carouselController: controller,
+        options: CarouselOptions(
+            enableInfiniteScroll: false,
+            autoPlay: true,
+            enlargeCenterPage: true,
+            enlargeFactor: 0.2,
+            enlargeStrategy: CenterPageEnlargeStrategy.scale,
+            onPageChanged: (index, reason) {
+              current = index;
+            }),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: imageSliders.asMap().entries.map((entry) {
+          return GestureDetector(
+            onTap: () => controller.animateToPage(entry.key),
+            child: Container(
+              width: 12.0,
+              height: 12.0,
+              margin:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black)
+                      .withOpacity(current == entry.key ? 0.9 : 0.4)),
+            ),
+          );
+        }).toList(),
+      ),
+    ],
   );
 }
