@@ -1,0 +1,12 @@
+workflows:
+  test_1:
+    name: FirstWorkFlow
+    scripts:
+      - flutter pub get
+      - name : Build Apk
+        script: flutter build apk --release
+      - name : Build iOS
+        script: flutter build ios --release
+    artifacts:
+      -   build/**/output/**/*.apk
+    
