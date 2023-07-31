@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -240,31 +239,10 @@ class DashboardScreen extends StatelessWidget {
             )
           ],
         ),
-=======
-import 'package:flutter/material.dart';
-
-class DashboardScreen extends StatelessWidget {
-  static const routeName = 'dashboard';
-  const DashboardScreen({super.key});
-
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const DashboardScreen());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-          child: Column(
-        children: [],
->>>>>>> 0871144cbffac7124844fd5aeaa5d8821c8078d2
       )),
     );
   }
 }
-<<<<<<< HEAD
 
 class NavDrawer extends StatelessWidget {
   const NavDrawer({
@@ -508,5 +486,3 @@ Widget productTag(String assestTag, BuildContext context, String productName,
     ),
   );
 }
-=======
->>>>>>> 0871144cbffac7124844fd5aeaa5d8821c8078d2
