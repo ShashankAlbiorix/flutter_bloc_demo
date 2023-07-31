@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "355748573929",
+    "project_id": "bigbazaar-3768e",
+    "storage_bucket": "bigbazaar-3768e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355748573929:android:f014211b932af15e8d7678",
+        "android_client_info": {
+          "package_name": "com.shashankbloc.bigbaazar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "355748573929-7dhdbjj13ukp6gmqg61e9qh69fr7ks47.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shashankbloc.bigbaazar",
+            "certificate_hash": "ff8bc38f951264f37ca0ba83aecef255718023f9"
+          }
+        },
+        {
+          "client_id": "355748573929-tch02pv4kc0gr2lto1vmpv37mc4ntf9q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdA3yPCefHjyN0_6AZmLRxzQ3OJcfzpxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "355748573929-gq8t8kel4kpbcqiudoe8b3paq6domv14.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
